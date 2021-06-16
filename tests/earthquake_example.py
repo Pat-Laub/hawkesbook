@@ -1,0 +1,63 @@
+import hawkesbook as hawkes
+
+import numpy as np
+import pandas as pd
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+from statsmodels.graphics.gofplots import qqplot
+
+# Load data to fit
+quakes = pd.read_csv("japanese-earthquakes.csv")
+quakes.index = pd.to_datetime(quakes.Day.astype(str) + "/" + quakes.Month.astype(str) + "/" + quakes.Year.astype(str) + " " + quakes.Time, dayfirst=True)
+quakes.sort_index(inplace=True)
+
+# Calculate each arrival as a (fractional) number of days since the
+# beginning of the observation period
+timeToQuake = quakes.index - pd.Timestamp("1/1/1973")
+ts = np.array(timeToQuake.total_seconds() / 60 / 60 / 24)
+
+# Calculate the length of the observation period
+obsPeriod = pd.Timestamp("31/12/2020") - pd.Timestamp("1/1/1973")
+T = obsPeriod.days
+
+# Calculate the maximum likelihood estimate for the Hawkes process
+# with an exponentially decaying intensity
+𝛉_exp_mle = hawkes.exp_mle(ts, T)
+print("Exp Hawkes MLE fit: ", 𝛉_exp_mle)
+
+# Calculate the EM estimate or the same type of Hawkes process
+𝛉_exp_em = hawkes.exp_em(ts, T, iters=100)
+print("Exp Hawkes EM fit: ", 𝛉_exp_mle)
+
+# Get the likelihoods of each fit to find the better one
+ll_mle = hawkes.exp_log_likelihood(ts, T, 𝛉_exp_mle)
+ll_em = hawkes.exp_log_likelihood(ts, T, 𝛉_exp_em)
+
+if ll_mle > ll_em:
+	print("MLE was a better fit than EM in this case")
+	𝛉_exp = 𝛉_exp_mle
+	ll_exp = ll_mle
+else:
+	print("EM was a better fit than MLE in this case")
+	𝛉_exp = 𝛉_exp_em
+	ll_exp = ll_em
+
+# Fit instead the Hawkes with a power-law decaay
+𝛉_pl = hawkes.power_mle(ts, T)
+ll_pl = hawkes.power_log_likelihood(ts, T, 𝛉_pl)
+
+# Compare the BICs
+BIC_exp = 3 * np.log(len(ts)) - 2 * ll_exp
+BIC_pl = 4 * np.log(len(ts)) - 2 * ll_pl
+if BIC_exp < BIC_pl:
+	print(f"The exponentially-decaying Hawkes was a better fit (BIC={BIC_exp:.2f}) than the power-law Hawkes (BIC={BIC_pl:.2f})")
+else:
+	print(f"The power-law Hawkes was a better fit (BIC={BIC_pl:.2f}) than the exponentially-decaying Hawkes (BIC={BIC_exp:.2f})")
+
+# Create a Q-Q plot for the expontial-decay fit by
+# first transforming the points to a unit-rate Poisson
+# proces as outlined by the random time change theorem
+tsShifted = hawkes.exp_hawkes_compensators(ts, 𝛉_exp)
+iat = np.diff(np.insert(tsShifted, 0, 0))
+qqplot(iat, dist=stats.expon, fit=False, line="45")
+plt.show()
