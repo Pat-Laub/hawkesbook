@@ -38,7 +38,7 @@ assert_allclose(hawkes.exp_log_likelihood(testObs, testT, test𝛉),
                hawkes.log_likelihood(testObs, testT, test𝛉, hawkes.exp_hawkes_intensity, hawkes.exp_hawkes_compensator),
                0.1)
 
-print(f"Passed! Exp version = {hawkes.exp_log_likelihood(testObs, testT, test𝛉)} == general verison = {hawkes.log_likelihood(testObs, testT, test𝛉, hawkes.exp_hawkes_intensity, hawkes.exp_hawkes_compensator)}")
+print(f"Passed! Exp version = {hawkes.exp_log_likelihood(testObs, testT, test𝛉)} == general version = {hawkes.log_likelihood(testObs, testT, test𝛉, hawkes.exp_hawkes_intensity, hawkes.exp_hawkes_compensator)}")
 
 # Test simulation methods for exponential case
 sim𝛉 = np.array([1.0, 2.0, 3.0])
@@ -87,7 +87,7 @@ testT = 1_000
 testObs = hawkes.exp_simulate_by_thinning(sim𝛉, testT)
 print(f"Testing log likelihoods on larger sample (of size {len(testObs)})")
 
-print(f"Exp version = {hawkes.exp_log_likelihood(testObs, testT, test𝛉)} == general verison = {hawkes.log_likelihood(testObs, testT, test𝛉, hawkes.exp_hawkes_intensity, hawkes.exp_hawkes_compensator)}")
+print(f"Exp version = {hawkes.exp_log_likelihood(testObs, testT, test𝛉)} == general version = {hawkes.log_likelihood(testObs, testT, test𝛉, hawkes.exp_hawkes_intensity, hawkes.exp_hawkes_compensator)}")
 
 assert_allclose(hawkes.exp_log_likelihood(testObs, testT, test𝛉),
                hawkes.log_likelihood(testObs, testT, test𝛉, hawkes.exp_hawkes_intensity, hawkes.exp_hawkes_compensator),

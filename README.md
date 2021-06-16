@@ -10,7 +10,7 @@ The main design goal for this package was simplicity and readability.
 Some functions are JIT-compiled to C and parallelised with `numba` so the computational performance is not completely neglected.
 Everything that can be `numpy`-vectorised has been.
 
-Our main dependencies are numba, numpy, and scipy (for the minimize function).
+Our main dependencies are `numba`, `numpy`, and `scipy` (for the minimize function).
 
 As an example, in the book we have a case study which fits various Hawkes process to the arrival times of earthquakes.
 The code for the fitting and analysis of that data is like:
@@ -60,7 +60,7 @@ else:
 	𝛉_exp = 𝛉_exp_em
 	ll_exp = ll_em
 
-# Fit instead the Hawkes with a power-law decaay
+# Fit instead the Hawkes with a power-law decay
 𝛉_pl = hawkes.power_mle(ts, T)
 ll_pl = hawkes.power_log_likelihood(ts, T, 𝛉_pl)
 
@@ -68,13 +68,15 @@ ll_pl = hawkes.power_log_likelihood(ts, T, 𝛉_pl)
 BIC_exp = 3 * np.log(len(ts)) - 2 * ll_exp
 BIC_pl = 4 * np.log(len(ts)) - 2 * ll_pl
 if BIC_exp < BIC_pl:
-	print(f"The exponentially-decaying Hawkes was a better fit (BIC={BIC_exp:.2f}) than the power-law Hawkes (BIC={BIC_pl:.2f})")
+	print(f"The exponentially-decaying Hawkes was the better fit with BIC={BIC_exp:.2f}.")
+	print(f"The power-law Hawkes had BIC={BIC_pl:.2f}.")
 else:
-	print(f"The power-law Hawkes was a better fit (BIC={BIC_pl:.2f}) than the exponentially-decaying Hawkes (BIC={BIC_exp:.2f})")
+	print(f"The power-law Hawkes was the better fit with BIC={BIC_pl:.2f}.")
+	print(f"The exponentially-decaying Hawkes had BIC={BIC_exp:.2f}.")
 
-# Create a Q-Q plot for the expontial-decay fit by
+# Create a Q-Q plot for the exponential-decay fit by
 # first transforming the points to a unit-rate Poisson
-# proces as outlined by the random time change theorem
+# process as outlined by the random time change theorem
 tsShifted = hawkes.exp_hawkes_compensators(ts, 𝛉_exp)
 iat = np.diff(np.insert(tsShifted, 0, 0))
 qqplot(iat, dist=stats.expon, fit=False, line="45")
