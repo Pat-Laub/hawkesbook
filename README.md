@@ -1,12 +1,25 @@
-# The Python package 'hawkesbook' for Hawkes Process inference, simulation, etc.
+# _hawkesbook_ Python package for Hawkes Process inference, simulation, etc.
 
+This package implements inference, simulation, and other related method for Hawkes processes and some mutually-exciting Hawkes processes.
+It is meant to accompany the upcoming book _The Elements of Hawkes Processes_ written by Patrick J. Laub, Young Lee, and Thomas Taimre.
 To install simply run `pip install hawkesbook`.
 
-This package is meant to accompany the upcoming book _The Elements of Hawkes Processes_ written by Patrick J. Laub, Young Lee, and Thomas Taimre.
-
-It implements inference, simulation, and other related method for Hawkes processes and some mutually-exciting Hawkes processes.
-
 The main design goal for this package was simplicity and readability.
+Unicode characters are used to match the mathematics to the code as much as possible.
+For example, the Hawkes process conditional intensity (in LaTeX notation) is
+```latex
+\lambda^\ast(t) = \lambda + \sum_{t_i \in \mathcal{H}_t} \mu(t - t_i)
+```
+and this is rendered in Python as
+```python
+def hawkes_intensity(t, ℋ_t, 𝛉):
+    λ, μ, _ = 𝛉
+    λˣ = λ
+    for t_i in ℋ_t:
+        λˣ += μ(t - t_i)
+    return λˣ
+```
+
 Some functions are JIT-compiled to C and parallelised with `numba` so the computational performance is not completely neglected.
 Everything that can be `numpy`-vectorised has been.
 
