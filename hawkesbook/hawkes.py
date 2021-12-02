@@ -371,8 +371,6 @@ def em_responsibilities(𝐭, 𝛉):
 def exp_em(𝐭, T, 𝛉_start=np.array([1.0, 2.0, 3.0]), iters=100, verbosity=None, calcLikelihoods=False):
     """
     Run an EM fit on the '𝐭' arrival times up until final time 'T'.
-
-    hp.fit(array<float>, float) -> array<float>
     """
     𝛉 = 𝛉_start.copy()
 
