@@ -1,7 +1,7 @@
 # _hawkesbook_ Python package for Hawkes Process inference, simulation, etc.
 
 This package implements inference, simulation, and other related method for Hawkes processes and some mutually-exciting Hawkes processes.
-It is meant to accompany the upcoming book _The Elements of Hawkes Processes_ written by Patrick J. Laub, Young Lee, and Thomas Taimre.
+It is meant to accompany [_The Elements of Hawkes Processes_](https://link.springer.com/book/10.1007/978-3-030-84639-8) written by Patrick J. Laub, Young Lee, and Thomas Taimre.
 To install simply run `pip install hawkesbook`.
 
 The main design goal for this package was simplicity and readability.
