@@ -1,0 +1,4 @@
+build/*
+dist/*
+hawkesbook.egg-info/*
+*__pycache__*
