@@ -198,6 +198,12 @@ def exp_simulate_by_composition(𝛉, N):
         U_1 = rnd.rand()
         U_2 = rnd.rand()
 
+        # Technically the following works, but without @njit
+        # it will print out "RuntimeWarning: invalid value encountered in log".
+        # This is because 1 + β/(λˣ_k + α - λ)*np.log(U_2) can be negative
+        # so T_2 can be np.NaN. The Dassios & Zhao (2013) algorithm checks if this
+        # expression is negative and handles it separately, though the lines
+        # below have the same behaviour as t_k = min(T_1, np.NaN) will be T_1. 
         T_1 = t_k - np.log(U_1) / λ
         T_2 = t_k - np.log(1 + β/(λˣ_k + α - λ)*np.log(U_2))/β
 
@@ -205,8 +211,12 @@ def exp_simulate_by_composition(𝛉, N):
         t_k = min(T_1, T_2)
         ℋ[k] = t_k
 
-        λˣ_k = λ + (λˣ_k + α - λ) * (
+        if k > 0:
+            λˣ_k = λ + (λˣ_k + α - λ) * (
                 np.exp(-β * (t_k - t_prev)))
+        else:
+            λˣ_k = λ
+          
     return ℋ
 
 
@@ -783,6 +793,11 @@ def exp_mle_with_hess(𝐭, T, 𝛉_start=np.array([1.0, 2.0, 3.0])):
 
 @njit(nogil=True)
 def exp_simulate_by_composition_alt(𝛉, T):
+    """
+    This is simply an alternative to 'exp_simulate_by_composition'
+    where the simulation stops after time T rather than stopping after
+    observing N arrivals.
+    """
     λ, α, β = 𝛉
     λˣ_k = λ
     t_k = 0
@@ -792,6 +807,12 @@ def exp_simulate_by_composition_alt(𝛉, T):
         U_1 = rnd.rand()
         U_2 = rnd.rand()
 
+        # Technically the following works, but without @njit
+        # it will print out "RuntimeWarning: invalid value encountered in log".
+        # This is because 1 + β/(λˣ_k + α - λ)*np.log(U_2) can be negative
+        # so T_2 can be np.NaN. The Dassios & Zhao (2013) algorithm checks if this
+        # expression is negative and handles it separately, though the lines
+        # below have the same behaviour as t_k = min(T_1, np.NaN) will be T_1. 
         T_1 = t_k - np.log(U_1) / λ
         T_2 = t_k - np.log(1 + β/(λˣ_k + α - λ)*np.log(U_2))/β
 
@@ -799,7 +820,10 @@ def exp_simulate_by_composition_alt(𝛉, T):
         t_k = min(T_1, T_2)
         ℋ.append(t_k)
 
-        λˣ_k = λ + (λˣ_k + α - λ) * (
-                np.exp(-β * (t_k - t_prev)))
+        if len(ℋ) > 1:
+            λˣ_k = λ + (λˣ_k + α - λ) * (
+                    np.exp(-β * (t_k - t_prev)))
+        else:
+            λˣ_k = λ
 
     return np.array(ℋ[:-1])
