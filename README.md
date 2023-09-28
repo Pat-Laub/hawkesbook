@@ -6,10 +6,10 @@ To install simply run `pip install hawkesbook`.
 
 The main design goal for this package was simplicity and readability.
 Unicode characters are used to match the mathematics to the code as much as possible.
-For example, the Hawkes process conditional intensity (in LaTeX notation) is
-```latex
-\lambda^\ast(t) = \lambda + \sum_{t_i \in \mathcal{H}_t} \mu(t - t_i)
-```
+For example, the Hawkes process conditional intensity is
+
+$$\lambda^\ast(t) = \lambda + \sum_{t_i \in \mathcal{H}_t} \mu(t - t_i)$$
+
 and this is rendered in Python as
 ```python
 def hawkes_intensity(t, ℋ_t, 𝛉):
